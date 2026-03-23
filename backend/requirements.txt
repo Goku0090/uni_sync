@@ -31,3 +31,13 @@ pillow==10.1.0
 
 # Security
 cryptography==41.0.7
+
+# Testing and Development
+pytest==7.4.3
+pytest-django==4.7.0
+pytest-cov==4.1.0
+factory-boy==3.3.0
+faker==20.1.0
+
+# Monitoring and Error Tracking
+sentry-sdk==1.38.0

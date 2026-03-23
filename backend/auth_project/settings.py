@@ -5,6 +5,29 @@ from dotenv import load_dotenv
 # Load environment variables early
 load_dotenv()
 
+# --- Sentry Error Monitoring ---
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_dsn = os.getenv('SENTRY_DSN')
+if sentry_dsn:
+    sentry_sdk.init(
+        dsn=sentry_dsn,
+        integrations=[DjangoIntegration()],
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        traces_sample_rate=1.0,
+        # Set profiles_sample_rate to 1.0 to profile 100%
+        # of sampled transactions.
+        # We recommend adjusting this value in production.
+        profiles_sample_rate=1.0,
+        environment=os.getenv('ENVIRONMENT', 'development'),
+        release=os.getenv('RELEASE_VERSION', '1.0.0'),
+    )
+    print("[SUCCESS] Sentry error monitoring enabled")
+else:
+    print("[INFO] Sentry DSN not configured - error monitoring disabled")
+
 # --- Base Directory ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -87,6 +110,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    # Custom security middleware
+    'auth_project.middleware.SecurityHeadersMiddleware',
+    'auth_project.middleware.InputValidationMiddleware',
 ]
 
 # --- Root URL Config ---
@@ -188,6 +214,31 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # --- Media Files (Optional for uploads like Excel) ---
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# --- Security Headers & Settings ---
+# Content Security Policy
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+
+# HTTPS settings (only in production)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+# Content Security Policy
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "https://www.googletagmanager.com", "https://www.google-analytics.com")
+CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
+CSP_IMG_SRC = ("'self'", "data:", "https:", "https://www.google-analytics.com")
+CSP_CONNECT_SRC = ("'self'", "https://www.google-analytics.com", "wss:", "ws:")
+
+# Security middleware for additional headers
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin'
 
 # --- Default Primary Key Field Type ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
