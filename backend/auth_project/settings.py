@@ -383,8 +383,7 @@ CSRF_TRUSTED_ORIGINS = [
 if 'RENDER' in os.environ:
     render_hostname = os.getenv('RENDER_EXTERNAL_HOSTNAME')
     if render_hostname:
-        csrf_origins += f',https://{render_hostname}'
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins.split(',') if origin.strip()]
+        CSRF_TRUSTED_ORIGINS.append(f'https://{render_hostname}')
     
 # Initialize logger
 logger = logging.getLogger(__name__)
