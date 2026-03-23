@@ -1,12 +1,21 @@
 // Login page JavaScript functionality
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Login JS loaded');
+
     // Password toggle functionality
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
 
+    console.log('togglePassword element:', togglePassword);
+    console.log('passwordInput element:', passwordInput);
+
     if (togglePassword && passwordInput) {
+        console.log('Adding event listener to toggle button');
+
         togglePassword.addEventListener('click', function() {
+            console.log('Toggle button clicked');
+
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
 
@@ -14,8 +23,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const icon = this.querySelector('i');
             if (icon) {
                 icon.className = type === 'text' ? 'fas fa-eye-slash' : 'fas fa-eye';
+                console.log('Icon updated to:', icon.className);
             }
         });
+    } else {
+        console.log('Toggle button or password input not found');
     }
 
     // Form elements
