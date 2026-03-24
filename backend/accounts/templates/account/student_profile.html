@@ -781,7 +781,7 @@ body {
                     {% endif %}
 
                     <!-- Statistics Cards -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
                         <div class="stats-card">
                             <div class="stats-number" id="projectsCount">0</div>
                             <p class="text-sm text-gray-600 mt-1">Projects</p>
@@ -797,6 +797,14 @@ body {
                         <div class="stats-card">
                             <div class="stats-number" id="commentsCount">0</div>
                             <p class="text-sm text-gray-600 mt-1">Comments</p>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-number" id="joinedProjectsCount">0</div>
+                            <p class="text-sm text-gray-600 mt-1">Projects Joined</p>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-number" id="tasksCompletedCount">0</div>
+                            <p class="text-sm text-gray-600 mt-1">Tasks Completed</p>
                         </div>
                     </div>
 
@@ -980,30 +988,32 @@ body {
 
     // Setup event listeners
     function setupEventListeners() {
-        // Edit/Cancel buttons
-        editBtn.addEventListener('click', switchToEditMode);
-        cancelBtn.addEventListener('click', switchToViewMode);
+        // Guard any missing elements
+        if (editBtn) editBtn.addEventListener('click', switchToEditMode);
+        if (cancelBtn) cancelBtn.addEventListener('click', switchToViewMode);
 
-        // Photo upload
-        photoUploadArea.addEventListener('click', () => photoInput.click());
-        photoInput.addEventListener('change', handlePhotoUpload);
+        if (photoUploadArea && photoInput) {
+            photoUploadArea.addEventListener('click', () => photoInput.click());
+            photoInput.addEventListener('change', handlePhotoUpload);
 
-        // Drag and drop for photo
-        photoUploadArea.addEventListener('dragover', handleDragOver);
-        photoUploadArea.addEventListener('dragleave', handleDragLeave);
-        photoUploadArea.addEventListener('drop', handlePhotoDrop);
+            // Drag and drop for photo
+            photoUploadArea.addEventListener('dragover', handleDragOver);
+            photoUploadArea.addEventListener('dragleave', handleDragLeave);
+            photoUploadArea.addEventListener('drop', handlePhotoDrop);
+        }
 
-        // Form submission
-        profileForm.addEventListener('submit', handleFormSubmit);
+        if (profileForm) {
+            profileForm.addEventListener('submit', handleFormSubmit);
+        }
 
-        // Real-time validation
-        [fullNameInput, collegeInput, locationInput, interestsInput, bioTextarea].forEach(input => {
+        const inputs = [fullNameInput, collegeInput, locationInput, interestsInput, bioTextarea].filter(Boolean);
+        inputs.forEach(input => {
             input.addEventListener('input', () => validateField(input));
         });
 
         // Auto-save draft (optional)
         let saveTimeout;
-        [fullNameInput, collegeInput, locationInput, interestsInput, bioTextarea].forEach(input => {
+        inputs.forEach(input => {
             input.addEventListener('input', () => {
                 clearTimeout(saveTimeout);
                 saveTimeout = setTimeout(() => {
@@ -1238,19 +1248,34 @@ body {
 
     // Load user statistics
     function loadUserStatistics() {
-        // In a real app, this would be an AJAX call to get user stats
-        // For now, we'll simulate with some demo data
-        fetch('/api/user-stats/')  // You'll need to create this endpoint
-            .then(response => response.json())
+        if (!projectsCount || !connectionsCount || !likesCount || !commentsCount) {
+            return;
+        }
+
+        fetch('/api/user-stats/')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 projectsCount.textContent = data.projects_created || '0';
                 connectionsCount.textContent = data.connections_made || '0';
                 likesCount.textContent = data.likes_received || '0';
                 commentsCount.textContent = data.comments_made || '0';
+                const joinedProjectsCount = document.getElementById('joinedProjectsCount');
+                const tasksCompletedCount = document.getElementById('tasksCompletedCount');
+
+                if (joinedProjectsCount) {
+                    joinedProjectsCount.textContent = data.projects_joined || '0';
+                }
+                if (tasksCompletedCount) {
+                    tasksCompletedCount.textContent = data.tasks_completed || '0';
+                }
             })
             .catch(error => {
-                console.log('Stats not available, using defaults');
-                // Keep default values
+                console.log('Stats not available, using defaults', error);
             });
     }
 

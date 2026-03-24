@@ -540,6 +540,11 @@ class UserStats(models.Model):
         ).count()
         self.likes_received = Like.objects.filter(project__user=self.user).count()
         self.comments_made = Comment.objects.filter(user=self.user).count()
+        self.projects_joined = ProjectMember.objects.filter(user=self.user).exclude(project__user=self.user).count()
+        self.tasks_completed = ProjectTask.objects.filter(
+            models.Q(assigned_to=self.user) | models.Q(assigned_by=self.user),
+            status='completed'
+        ).count()
         self.followers_count = Follow.objects.filter(following=self.user).count()
         self.following_count = Follow.objects.filter(follower=self.user).count()
         self.last_updated = timezone.now()
