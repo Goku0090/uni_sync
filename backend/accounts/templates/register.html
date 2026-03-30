@@ -485,6 +485,19 @@
                                         <p id="college-help" class="text-xs text-gray-400 mt-1">Select from suggestions or type a different university name if your institution is not listed.</p>
                                     </div>
                                 </div>
+
+                                <div class="space-y-2 hidden" id="other-college-group">
+                                    <label for="id_other_college" class="block text-sm font-semibold text-gray-300">
+                                        <i class="fas fa-pencil-alt mr-2 text-accent"></i>Other College/University
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="id_other_college"
+                                        name="other_college"
+                                        class="form-input w-full"
+                                        placeholder="Type your college/university here">
+                                    <p class="text-xs text-gray-400">If your organization is not in the list above, provide it here.</p>
+                                </div>
                             </div>
 
                             <div class="grid md:grid-cols-2 gap-6">
@@ -937,7 +950,21 @@
         }
 
         document.getElementById('id_college').addEventListener('input', function() {
-            const query = this.value.trim();
+            const value = this.value.trim();
+
+            const otherCollegeGroup = document.getElementById('other-college-group');
+            const otherCollegeInput = document.getElementById('id_other_college');
+
+            if (value.toLowerCase() === 'other' || value.length > 0 && value.toLowerCase().includes('other')) {
+                otherCollegeGroup.classList.remove('hidden');
+                otherCollegeInput.required = true;
+            } else {
+                otherCollegeGroup.classList.add('hidden');
+                otherCollegeInput.required = false;
+                otherCollegeInput.value = '';
+            }
+
+            const query = value;
             clearTimeout(collegeSearchDebounce);
             collegeSearchDebounce = setTimeout(async () => {
                 const suggestions = await fetchCollegeSuggestions(query || 'university');
