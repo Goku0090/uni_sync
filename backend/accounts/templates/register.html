@@ -878,8 +878,18 @@
 
         document.getElementById('id_username').addEventListener('blur', async function() {
             const username = this.value.trim();
-            if (username.length < 3) {
+
+            if (!username) {
                 setValidationState('username', 'none');
+                document.getElementById('username-help').textContent = 'Choose a unique username (3-30 characters)';
+                document.getElementById('username-help').style.color = '#9ca3af';
+                return;
+            }
+
+            if (username.length < 3) {
+                setValidationState('username', 'invalid');
+                document.getElementById('username-help').textContent = 'Username must be at least 3 characters';
+                document.getElementById('username-help').style.color = '#ef4444';
                 return;
             }
 
@@ -899,7 +909,9 @@
                     document.getElementById('username-help').style.color = '#ef4444';
                 }
             } catch (error) {
-                setValidationState('username', 'none');
+                setValidationState('username', 'invalid');
+                document.getElementById('username-help').textContent = 'Username check failed; try again';
+                document.getElementById('username-help').style.color = '#ef4444';
                 console.error('Username check failed:', error);
             }
         });
@@ -919,8 +931,20 @@
 
         document.getElementById('id_email').addEventListener('blur', async function() {
             const email = this.value.trim();
-            if (!email.includes('@')) {
+
+            if (!email) {
                 setValidationState('email', 'none');
+                document.getElementById('email-help').textContent = "We'll send you a verification code";
+                document.getElementById('email-help').style.color = '#9ca3af';
+                document.getElementById('id_email').style.borderColor = '';
+                return;
+            }
+
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+                setValidationState('email', 'invalid');
+                document.getElementById('email-help').textContent = 'Invalid email format';
+                document.getElementById('email-help').style.color = '#ef4444';
+                document.getElementById('id_email').style.borderColor = '#ef4444';
                 return;
             }
 
@@ -932,13 +956,20 @@
 
                 if (data.available) {
                     setValidationState('email', 'valid');
+                    document.getElementById('email-help').textContent = 'Email available!';
+                    document.getElementById('email-help').style.color = '#10b981';
                     document.getElementById('id_email').style.borderColor = '#10b981';
                 } else {
                     setValidationState('email', 'invalid');
+                    document.getElementById('email-help').textContent = 'Email is already in use';
+                    document.getElementById('email-help').style.color = '#ef4444';
                     document.getElementById('id_email').style.borderColor = '#ef4444';
                 }
             } catch (error) {
-                setValidationState('email', 'none');
+                setValidationState('email', 'invalid');
+                document.getElementById('email-help').textContent = 'Email validation failed; try again';
+                document.getElementById('email-help').style.color = '#ef4444';
+                document.getElementById('id_email').style.borderColor = '#ef4444';
                 console.error('Email check failed:', error);
             }
         });
