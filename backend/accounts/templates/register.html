@@ -842,6 +842,9 @@
         });
 
         // Real-time validation
+        let usernameValidationRequestCounter = 0;
+        let emailValidationRequestCounter = 0;
+
         function setValidationState(fieldPrefix, state) {
             const loadingIcon = document.getElementById(`${fieldPrefix}-loading`);
             const validIcon = document.getElementById(`${fieldPrefix}-valid`);
@@ -849,17 +852,27 @@
 
             if (!loadingIcon || !validIcon || !invalidIcon) return;
 
+            const hideIcon = icon => {
+                icon.classList.add('hidden');
+                icon.style.display = 'none';
+            };
+
+            const showIcon = icon => {
+                icon.classList.remove('hidden');
+                icon.style.display = 'inline-block';
+            };
+
             // Ensure only one icon is visible at a time
-            loadingIcon.classList.add('hidden');
-            validIcon.classList.add('hidden');
-            invalidIcon.classList.add('hidden');
+            hideIcon(loadingIcon);
+            hideIcon(validIcon);
+            hideIcon(invalidIcon);
 
             if (state === 'loading') {
-                loadingIcon.classList.remove('hidden');
+                showIcon(loadingIcon);
             } else if (state === 'valid') {
-                validIcon.classList.remove('hidden');
+                showIcon(validIcon);
             } else if (state === 'invalid') {
-                invalidIcon.classList.remove('hidden');
+                showIcon(invalidIcon);
             }
         }
 
@@ -878,6 +891,7 @@
 
         document.getElementById('id_username').addEventListener('blur', async function() {
             const username = this.value.trim();
+            const requestId = ++usernameValidationRequestCounter;
 
             if (!username) {
                 setValidationState('username', 'none');
@@ -899,6 +913,9 @@
                 const response = await fetch(`/api/check-username/?username=${encodeURIComponent(username)}`);
                 const data = await response.json();
 
+                // discard stale response
+                if (requestId !== usernameValidationRequestCounter) return;
+
                 if (data.available) {
                     setValidationState('username', 'valid');
                     document.getElementById('username-help').textContent = 'Username available!';
@@ -909,6 +926,7 @@
                     document.getElementById('username-help').style.color = '#ef4444';
                 }
             } catch (error) {
+                if (requestId !== usernameValidationRequestCounter) return;
                 setValidationState('username', 'invalid');
                 document.getElementById('username-help').textContent = 'Username check failed; try again';
                 document.getElementById('username-help').style.color = '#ef4444';
@@ -931,6 +949,7 @@
 
         document.getElementById('id_email').addEventListener('blur', async function() {
             const email = this.value.trim();
+            const requestId = ++emailValidationRequestCounter;
 
             if (!email) {
                 setValidationState('email', 'none');
@@ -954,6 +973,9 @@
                 const response = await fetch(`/api/check-email/?email=${encodeURIComponent(email)}`);
                 const data = await response.json();
 
+                // discard stale response
+                if (requestId !== emailValidationRequestCounter) return;
+
                 if (data.available) {
                     setValidationState('email', 'valid');
                     document.getElementById('email-help').textContent = 'Email available!';
@@ -966,6 +988,7 @@
                     document.getElementById('id_email').style.borderColor = '#ef4444';
                 }
             } catch (error) {
+                if (requestId !== emailValidationRequestCounter) return;
                 setValidationState('email', 'invalid');
                 document.getElementById('email-help').textContent = 'Email validation failed; try again';
                 document.getElementById('email-help').style.color = '#ef4444';
@@ -984,6 +1007,10 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 UniSinq Registration Page Enhanced - Multi-step form ready!');
+
+            // Ensure the initial state is clean
+            setValidationState('username', 'none');
+            setValidationState('email', 'none');
 
             // Auto-dismiss messages after 5 seconds
             const messages = document.querySelectorAll('[class*="bg-red-500"], [class*="bg-green-500"]');
