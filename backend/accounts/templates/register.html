@@ -849,9 +849,18 @@
 
             if (!loadingIcon || !validIcon || !invalidIcon) return;
 
-            loadingIcon.classList.toggle('hidden', state !== 'loading');
-            validIcon.classList.toggle('hidden', state !== 'valid');
-            invalidIcon.classList.toggle('hidden', state !== 'invalid');
+            // Ensure only one icon is visible at a time
+            loadingIcon.classList.add('hidden');
+            validIcon.classList.add('hidden');
+            invalidIcon.classList.add('hidden');
+
+            if (state === 'loading') {
+                loadingIcon.classList.remove('hidden');
+            } else if (state === 'valid') {
+                validIcon.classList.remove('hidden');
+            } else if (state === 'invalid') {
+                invalidIcon.classList.remove('hidden');
+            }
         }
 
         document.getElementById('id_username').addEventListener('input', function() {
