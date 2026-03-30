@@ -856,10 +856,14 @@
 
         document.getElementById('id_username').addEventListener('input', function() {
             const username = this.value.trim();
+
+            // Always reset icons while user types, avoid stale checks
+            setValidationState('username', 'none');
+            document.getElementById('username-help').textContent = 'Choose a unique username (3-30 characters)';
+            document.getElementById('username-help').style.color = '#9ca3af';
+
             if (username.length < 3) {
-                setValidationState('username', 'none');
-                document.getElementById('username-help').textContent = 'Choose a unique username (3-30 characters)';
-                document.getElementById('username-help').style.color = '#9ca3af';
+                return;
             }
         });
 
@@ -893,10 +897,14 @@
 
         document.getElementById('id_email').addEventListener('input', function() {
             const email = this.value.trim();
+
+            // Always reset icons while user types, avoid stale checks
+            setValidationState('email', 'none');
+            document.getElementById('email-help').textContent = "We'll send you a verification code";
+            document.getElementById('email-help').style.color = '#9ca3af';
+
             if (!email.includes('@')) {
-                setValidationState('email', 'none');
-                document.getElementById('email-help').textContent = "We'll send you a verification code";
-                document.getElementById('email-help').style.color = '#9ca3af';
+                return;
             }
         });
 
