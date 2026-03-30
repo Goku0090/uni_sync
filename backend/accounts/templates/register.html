@@ -876,6 +876,56 @@
             }
         }
 
+        let collegeSearchDebounce = null;
+
+        async function fetchCollegeSuggestions(query) {
+            if (!query || query.length < 2) {
+                return [];
+            }
+
+            try {
+                const response = await fetch(`/api/college-search/?q=${encodeURIComponent(query)}`);
+                const json = await response.json();
+
+                if (json.success && Array.isArray(json.results)) {
+                    return json.results;
+                }
+            } catch (error) {
+                console.error('College search fetch failed', error);
+            }
+
+            return [];
+        }
+
+        function renderCollegeOptions(suggestions) {
+            const datalist = document.getElementById('colleges');
+            if (!datalist) return;
+
+            const topDefaults = [
+                'Harvard University', 'Massachusetts Institute of Technology', 'Stanford University',
+                'California Institute of Technology', 'IIT Bombay', 'IIT Delhi', 'IIT Madras', 'IIT Kanpur',
+                'IIT Kharagpur', 'NIT Trichy', 'NIT Warangal', 'BITS Pilani', 'Delhi University', 'JNU'
+            ];
+
+            const values = Array.from(new Set([...topDefaults, ...suggestions])).slice(0, 30);
+
+            datalist.innerHTML = '';
+            for (const college of values) {
+                const option = document.createElement('option');
+                option.value = college;
+                datalist.appendChild(option);
+            }
+        }
+
+        document.getElementById('id_college').addEventListener('input', function() {
+            const query = this.value.trim();
+            clearTimeout(collegeSearchDebounce);
+            collegeSearchDebounce = setTimeout(async () => {
+                const suggestions = await fetchCollegeSuggestions(query || 'university');
+                renderCollegeOptions(suggestions);
+            }, 300);
+        });
+
         document.getElementById('id_username').addEventListener('input', function() {
             const username = this.value.trim();
 
@@ -1005,12 +1055,17 @@
         });
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 UniSinq Registration Page Enhanced - Multi-step form ready!');
 
             // Ensure the initial state is clean
             setValidationState('username', 'none');
             setValidationState('email', 'none');
+
+            // Prefill college suggestions from RapidAPI and fallback list
+            renderCollegeOptions([]);
+            const initialSuggestions = await fetchCollegeSuggestions('university');
+            renderCollegeOptions(initialSuggestions);
 
             // Auto-dismiss messages after 5 seconds
             const messages = document.querySelectorAll('[class*="bg-red-500"], [class*="bg-green-500"]');
