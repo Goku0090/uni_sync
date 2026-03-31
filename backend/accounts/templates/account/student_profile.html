@@ -66,9 +66,9 @@ body {
 }
 
 .edit-btn, .save-btn {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border: none;
+    position: relative;
+    z-index: 9999;
+    pointer-events: auto;
     padding: 14px 28px;
     border-radius: 14px;
     font-weight: 600;
@@ -686,7 +686,7 @@ body {
                         <p class="text-gray-600">Manage your personal information</p>
                     </div>
                 </div>
-                <button id="editBtn" class="edit-btn">
+                <button id="editBtn" type="button" class="edit-btn">
                     <i data-lucide="edit-2" class="w-5 h-5"></i>
                     Edit Profile
                 </button>
@@ -980,17 +980,38 @@ body {
     const bioTextarea = document.getElementById('id_bio');
 
     // Initialize page
-    document.addEventListener('DOMContentLoaded', function() {
+    function initProfilePage() {
         calculateProfileCompletion();
         loadUserStatistics();
         setupEventListeners();
-    });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProfilePage);
+    } else {
+        initProfilePage();
+    }
 
     // Setup event listeners
     function setupEventListeners() {
         // Guard any missing elements
-        if (editBtn) editBtn.addEventListener('click', switchToEditMode);
-        if (cancelBtn) cancelBtn.addEventListener('click', switchToViewMode);
+        if (editBtn) {
+            editBtn.style.position = 'relative';
+            editBtn.style.zIndex = '9999';
+            editBtn.style.pointerEvents = 'auto';
+            editBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log('Edit Profile click event fired');
+                switchToEditMode();
+            });
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                switchToViewMode();
+            });
+        }
 
         if (photoUploadArea && photoInput) {
             photoUploadArea.addEventListener('click', () => photoInput.click());

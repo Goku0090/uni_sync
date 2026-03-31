@@ -190,24 +190,50 @@
       overflow: hidden;
     }
 
-    /* Enhanced TomSelect for technologies */
-    #technologies {
+    /* Enhanced TomSelect for technologies and roles */
+    #technologies,
+    #looking_for {
       min-height: 44px;
       min-width: 100%;
     }
 
     .tom-select .ts-control {
       min-height: 44px !important;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #EAEAEA;
+      max-height: 170px !important;
+      overflow-y: auto !important;
+      background: #0f1630 !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      color: #EAEAEA !important;
+      padding: 4px 8px !important;
+    }
+
+    .tom-select .ts-control .items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      align-items: center;
+      max-height: 126px;
+      overflow-y: auto;
+    }
+
+    .tom-select .ts-control .ts-input,
+    .tom-select .ts-control .item,
+    .tom-select .ts-control .placeholder {
+      color: #EAEAEA !important;
+      background: #0f1630 !important;
+    }
+
+    .tom-select .ts-control .item {
+      background: #334155 !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: #FFFFFF !important;
     }
 
     .tom-select .ts-dropdown {
       max-height: 240px !important;
       overflow-y: auto !important;
-      background: #0f1630;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #0f1630 !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
     }
 
     .step-indicator::before {
@@ -307,14 +333,37 @@
     }
 
     /* Specific styling for select dropdown options */
-    select.form-input option {
-      background:#1E1E2F;color:#EAEAEA;padding:8px;
+    select.form-input option,
+    #technologies option,
+    #looking_for option {
+      background:#1E1E2F !important;
+      color:#EAEAEA !important;
+      padding:8px;
     }
 
     /* Ensure TomSelect dropdown items are visible */
     .ts-dropdown .ts-dropdown-content .option {
       color:#EAEAEA !important;
       background:#1E1E2F !important;
+    }
+
+    /* Force select fallback control to dark in case TomSelect wrapper is not active */
+    #technologies,
+    #looking_for,
+    .form-input#technologies,
+    .form-input#looking_for {
+      background: #0f1630 !important;
+      color: #EAEAEA !important;
+      border: 1px solid rgba(255,255,255,0.2) !important;
+    }
+
+    #technologies:hover,
+    #looking_for:hover,
+    #technologies:focus,
+    #looking_for:focus {
+      border-color: rgba(102,126,234,0.9) !important;
+      outline:none;
+      box-shadow: 0 0 0 1px rgba(102,126,234,0.5);
     }
 
     .ts-dropdown .ts-dropdown-content .option:hover,
@@ -348,6 +397,23 @@
       background:#667eea !important;
       color:#EAEAEA !important;
       border:1px solid rgba(102,126,234,0.3) !important;
+    }
+
+    /* Hard overrides for fallback native select and TomSelect container */
+    #technologies,
+    #technologies option,
+    .tom-select,
+    .tom-select .ts-control,
+    .tom-select .ts-control .ts-input,
+    .tom-select .ts-control .item,
+    .tom-select .ts-dropdown,
+    .tom-select .ts-dropdown .ts-dropdown-content .option {
+      background: #0f1630 !important;
+      color: #EAEAEA !important;
+    }
+    #technologies, #technologies option {
+      background: #0f1630 !important;
+      color: #EAEAEA !important;
     }
 
     /* TomSelect placeholder */
@@ -439,29 +505,25 @@
   <div class="notification-container" id="notificationContainer" aria-live="polite" aria-atomic="true"></div>
 
   <nav class="glass sticky top-4 mx-6 p-4 page" role="navigation" aria-label="Main navigation" style="backdrop-filter: blur(12px); background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
-    <div class="flex items-center justify-between" style="gap: 24px;">
+    <div style="position: relative; width:100%; height: 64px; display:flex; align-items:center; justify-content:center;">
       <!-- Logo Section -->
-      <div class="flex items-center gap-4" style="flex: 1;">
-        <a href="{% url 'main_home' %}" class="logo-link" title="Back to Home" style="display: flex; align-items: center; gap: 12px; text-decoration: none; transition: transform 0.3s ease; transform-origin: left;">
-          <!-- UniSinq Logo Image -->
+      <div style="position: absolute; left: 18px; display: flex; align-items: center; gap: 12px;">
+        <a href="{% url 'main_home' %}" class="logo-link" title="Back to Home" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
           <img src="{% static 'images/unisinq-logo.png' %}" alt="UniSinq Logo" style="height: 45px; width: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-          <!-- Brand Text -->
           <div style="display: flex; flex-direction: column; gap: 2px;">
             <div style="font-size: 16px; font-weight: 800; background: linear-gradient(90deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: -0.5px;">UNISINQ</div>
             <div style="font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 500;">Post a Project</div>
           </div>
         </a>
       </div>
-      
       <!-- Center Status -->
-      <div style="display: flex; align-items: center; gap: 12px; flex: 1; justify-content: center;">
+      <div style="position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; justify-content: center;">
         <div style="font-size: 13px; color: rgba(255,255,255,0.6); padding: 8px 14px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
           📝 Create a project & find collaborators
         </div>
       </div>
-      
       <!-- Actions -->
-      <div class="flex items-center gap-3" style="flex: 1; justify-content: flex-end;">
+      <div style="position: absolute; right: 18px; display: flex; align-items: center; gap: 8px;">
         <button class="btn-primary" onclick="showProjectPreview()" title="Preview project" style="display: flex; align-items: center; gap: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600;">
           <i data-lucide="eye" class="w-4 h-4"></i>
           <span>Preview</span>
@@ -704,7 +766,18 @@
 
               <div class="mt-4">
                 <label class="text-sm font-semibold">Roles you're looking for</label>
-                <select id="looking_for" name="looking_for" multiple></select>
+                <select id="looking_for" name="looking_for" multiple>
+                  <option value="Designer">Designer</option>
+                  <option value="Frontend Developer">Frontend Developer</option>
+                  <option value="Backend Developer">Backend Developer</option>
+                  <option value="ML Engineer">ML Engineer</option>
+                  <option value="Data Scientist">Data Scientist</option>
+                  <option value="Project Manager">Project Manager</option>
+                  <option value="DevOps Engineer">DevOps Engineer</option>
+                  <option value="QA Tester">QA Tester</option>
+                  <option value="Product Manager">Product Manager</option>
+                  <option value="UI/UX Designer">UI/UX Designer</option>
+                </select>
               </div>
             </div>
           </div>
@@ -836,7 +909,21 @@
       new TomSelect('#looking_for', {
         plugins: ['remove_button'],
         placeholder: 'Select roles you need...',
-        persist:false, create:true, maxItems:6
+        persist:false,
+        create:true,
+        maxItems:6,
+        options:[
+          {value:'Designer', text:'Designer'},
+          {value:'Frontend Developer', text:'Frontend Developer'},
+          {value:'Backend Developer', text:'Backend Developer'},
+          {value:'ML Engineer', text:'ML Engineer'},
+          {value:'Data Scientist', text:'Data Scientist'},
+          {value:'Project Manager', text:'Project Manager'},
+          {value:'DevOps Engineer', text:'DevOps Engineer'},
+          {value:'QA Tester', text:'QA Tester'},
+          {value:'Product Manager', text:'Product Manager'},
+          {value:'UI/UX Designer', text:'UI/UX Designer'}
+        ]
       });
     }
   }
