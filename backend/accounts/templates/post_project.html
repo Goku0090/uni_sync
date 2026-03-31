@@ -611,7 +611,36 @@
 
               <div>
                 <label class="text-sm font-semibold">Technologies</label>
-                <select id="technologies" name="technologies" multiple></select>
+                <select id="technologies" name="technologies" multiple>
+                  <option value="React">React</option>
+                  <option value="Next.js">Next.js</option>
+                  <option value="Vue.js">Vue.js</option>
+                  <option value="Angular">Angular</option>
+                  <option value="Node.js">Node.js</option>
+                  <option value="Express">Express</option>
+                  <option value="Django">Django</option>
+                  <option value="Flask">Flask</option>
+                  <option value="Ruby on Rails">Ruby on Rails</option>
+                  <option value="Laravel">Laravel</option>
+                  <option value="Spring Boot">Spring Boot</option>
+                  <option value="Python">Python</option>
+                  <option value="Java">Java</option>
+                  <option value="C#">C#</option>
+                  <option value="Go">Go</option>
+                  <option value="Kotlin">Kotlin</option>
+                  <option value="Swift">Swift</option>
+                  <option value="Flutter">Flutter</option>
+                  <option value="React Native">React Native</option>
+                  <option value="Tailwind CSS">Tailwind CSS</option>
+                  <option value="Sass">Sass</option>
+                  <option value="PostgreSQL">PostgreSQL</option>
+                  <option value="MySQL">MySQL</option>
+                  <option value="MongoDB">MongoDB</option>
+                  <option value="Firebase">Firebase</option>
+                  <option value="Redis">Redis</option>
+                  <option value="Docker">Docker</option>
+                  <option value="Kubernetes">Kubernetes</option>
+                </select>
               </div>
 
               <div class="row">
@@ -789,7 +818,18 @@
       new TomSelect('#technologies', {
         plugins: ['remove_button'],
         placeholder: 'Choose technologies or type to add...',
-        persist:false, create:true, maxItems:8
+        persist:false,
+        create:true,
+        maxItems:8,
+        options:[
+          {value:'React',text:'React'},{value:'Next.js',text:'Next.js'},{value:'Vue.js',text:'Vue.js'},{value:'Angular',text:'Angular'},
+          {value:'Node.js',text:'Node.js'},{value:'Express',text:'Express'},{value:'Django',text:'Django'},{value:'Flask',text:'Flask'},
+          {value:'Ruby on Rails',text:'Ruby on Rails'},{value:'Laravel',text:'Laravel'},{value:'Spring Boot',text:'Spring Boot'},
+          {value:'Python',text:'Python'},{value:'Java',text:'Java'},{value:'C#',text:'C#'},{value:'Go',text:'Go'},
+          {value:'Kotlin',text:'Kotlin'},{value:'Swift',text:'Swift'},{value:'Flutter',text:'Flutter'},{value:'React Native',text:'React Native'},
+          {value:'Tailwind CSS',text:'Tailwind CSS'},{value:'Sass',text:'Sass'},{value:'PostgreSQL',text:'PostgreSQL'},{value:'MySQL',text:'MySQL'},
+          {value:'MongoDB',text:'MongoDB'},{value:'Firebase',text:'Firebase'},{value:'Redis',text:'Redis'},{value:'Docker',text:'Docker'},{value:'Kubernetes',text:'Kubernetes'}
+        ]
       });
     }
     if (document.getElementById('looking_for')){
