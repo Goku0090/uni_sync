@@ -1606,6 +1606,10 @@ def find_collaborators(request):
     users_with_profiles = base_profiles
     users_without_profiles = all_users.exclude(student_profile__isnull=False)
 
+    # Determine same college boost
+    user_college = (user_profile.college.strip().lower() if user_profile and user_profile.college else None)
+    SAME_COLLEGE_BOOST = 30
+
     # Create suggestions list
     suggestions = []
 
@@ -1624,7 +1628,16 @@ def find_collaborators(request):
         for profile in matching_profiles:
             profile_interests = profile.interests.lower().split(",") if profile.interests else []
             matching_interests = set(user_interests) & set([i.strip() for i in profile_interests])
-            profile.match_score = int((len(matching_interests) / len(user_interests)) * 100) if user_interests else 0
+            base_score = int((len(matching_interests) / len(user_interests)) * 100) if user_interests else 0
+
+            profile_college = (profile.college.strip().lower() if profile.college else None)
+            if user_college and profile_college and user_college == profile_college:
+                profile.match_score = base_score + SAME_COLLEGE_BOOST
+                profile.same_college = True
+            else:
+                profile.match_score = base_score
+                profile.same_college = False
+
             suggestions.append(profile)
 
         # Sort by match score (highest first)
@@ -1634,8 +1647,17 @@ def find_collaborators(request):
     if len(suggestions) < 20:
         remaining_profiles = users_with_profiles.exclude(id__in=[getattr(p, 'id', None) for p in suggestions])
         for profile in remaining_profiles[:20-len(suggestions)]:
-            profile.match_score = 0  # No match score for non-matching suggestions
+            profile_college = (profile.college.strip().lower() if profile.college else None)
+            if user_college and profile_college and user_college == profile_college:
+                profile.match_score = SAME_COLLEGE_BOOST
+                profile.same_college = True
+            else:
+                profile.match_score = 0
+                profile.same_college = False
             suggestions.append(profile)
+
+        # Keep ordering by match score for these additions as well
+        suggestions.sort(key=lambda x: x.match_score, reverse=True)
 
     # If still not enough, add users without profiles
     if len(suggestions) < 20:
