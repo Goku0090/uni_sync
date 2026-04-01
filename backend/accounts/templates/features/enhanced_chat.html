@@ -574,6 +574,7 @@
                                 <!-- File Upload -->
                                 <label for="file-input" class="p-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg hover:shadow-xl group border border-cyan-400/30 hover:border-cyan-300/50 text-white" title="Attach file">
                                     <i data-lucide="paperclip" class="w-5 h-5 text-white group-hover:rotate-12 transition-transform"></i>
+                                    <span class="fallback-icon" style="display:none;">📎</span>
                                     <input type="file" id="file-input" name="file" class="hidden" onchange="handleFileSelect(event)">
                                 </label>
 
@@ -582,6 +583,7 @@
                                         class="p-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg hover:shadow-xl group border border-red-400/30 hover:border-red-300/50"
                                         title="Record voice message">
                                     <i data-lucide="mic" class="w-5 h-5 text-white group-hover:animate-pulse"></i>
+                                    <span class="fallback-icon" style="display:none;">🎙️</span>
                                 </button>
 
                                 <!-- GIF/Sticker (placeholder) -->
@@ -589,6 +591,7 @@
                                         class="p-3 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white rounded-xl transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-lg hover:shadow-xl group border border-yellow-400/30 hover:border-yellow-300/50"
                                         title="Add GIF">
                                     <i data-lucide="smile" class="w-5 h-5 text-white group-hover:rotate-12 transition-transform"></i>
+                                    <span class="fallback-icon" style="display:none;">😄</span>
                                 </button>
                             </div>
 
@@ -1575,6 +1578,23 @@
     <!-- Initialize Lucide icons -->
     <script>
         lucide.createIcons();
+
+        // Fallback from emoji if Lucide icons fail to render
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('label, button').forEach(el => {
+                const fallback = el.querySelector('.fallback-icon');
+                if (!fallback) return;
+
+                const svgIcon = el.querySelector('svg');
+                if (svgIcon) {
+                    fallback.style.display = 'none';
+                    return;
+                }
+
+                // fallback visible when Lucide didn't render
+                fallback.style.display = 'inline';
+            });
+        });
     </script>
 
 </body>
