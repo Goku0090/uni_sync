@@ -714,7 +714,7 @@
                                                 <div class="flex items-center justify-between mb-1">
                                                 <h4 class="font-bold text-white truncate group-hover:text-blue-300 transition-colors flex items-center gap-2">
                                                     <i data-lucide="message-square" class="w-4 h-4 text-cyan-400"></i>
-                                                        {{ conversation.chat_room.name }}
+                                                        {{ conversation.chat_room.name|default:conversation.chat_room.display_name }}
                                         </h4>
                                         {% if conversation.unread_count > 0 %}
                                         <span class="unread-badge text-white text-xs px-3 py-1 rounded-full font-bold shadow-lg animate-pulse">

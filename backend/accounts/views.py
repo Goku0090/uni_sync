@@ -2229,7 +2229,8 @@ def message_view(request):
     # Get all group chat rooms where user is a member
     group_chat_rooms = ChatRoom.objects.filter(
         members__user=request.user,
-        is_active=True
+        is_active=True,
+        chat_type='group'
     ).distinct()
 
     # Convert to list and sort by most recent message
