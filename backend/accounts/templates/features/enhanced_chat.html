@@ -40,22 +40,34 @@
             box-shadow: 0 20px 40px rgba(139, 92, 246, 0.4);
         }
 
+        :root {
+            --unisinq-bg: #0b1225;
+            --unisinq-bg-alt: #111a34;
+            --unisinq-text: #e2e8f0;
+            --unisinq-accent: #0ea5e9;
+            --unisinq-accent-2: #7c3aed;
+            --unisinq-border: rgba(56, 189, 248, 0.35);
+            --unisinq-success: #22c55e;
+        }
+
         .message-own {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #db2777 100%);
+            background: linear-gradient(135deg, var(--unisinq-accent), var(--unisinq-accent-2));
             margin-left: auto;
             margin-right: 0;
             border-bottom-right-radius: 4px;
-            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
-            border: 1px solid rgba(168, 85, 247, 0.5);
+            box-shadow: 0 10px 28px rgba(14, 165, 233, 0.35);
+            border: 1px solid rgba(14, 165, 233, 0.6);
+            color: white;
         }
 
         .message-other {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.8));
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
             margin-left: 0;
             margin-right: auto;
             border-bottom-left-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(71, 85, 105, 0.5);
+            color: #cbd5e1;
         }
 
         .reaction-picker {
@@ -127,8 +139,30 @@
 
         .glass-effect {
             backdrop-filter: blur(16px);
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(14, 165, 233, 0.35);
+        }
+
+        .bubble-brand { color: var(--unisinq-text); }
+
+        .message-file {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(59, 130, 246, 0.15));
+            border: 1px solid rgba(14, 165, 233, 0.4);
+        }
+
+        .call-message {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.1), rgba(99, 102, 241, 0.12));
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .online-indicator::after {
+            background: var(--unisinq-success);
+            border: 2px solid #0b1225;
+        }
+
+        .unread-badge {
+            background: linear-gradient(135deg, #14b8a6, #0ea5e9);
+            color: #ffffff;
         }
 
         .gradient-bg {
@@ -212,7 +246,7 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-background via-purple-900/20 to-background text-text min-h-screen relative overflow-hidden">
+<body class="bg-gradient-to-br from-[#0a1227] via-[#111a33] to-[#0a1227] text-[#e2e8f0] min-h-screen relative overflow-hidden">
 
     <!-- Enhanced Background Effects -->
     <div class="fixed inset-0 pointer-events-none">
@@ -229,7 +263,7 @@
     <!-- Floating Action Menu -->
     <div id="fab-menu" class="fixed bottom-6 right-6 z-40">
         <button id="fab-main" onclick="toggleFabMenu()"
-                class="w-14 h-14 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full shadow-2xl transform transition-all duration-300 hover:scale-110 flex items-center justify-center">
+                class="w-14 h-14 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 rounded-full shadow-2xl transform transition-all duration-300 hover:scale-110 flex items-center justify-center">
             <i data-lucide="plus" id="fab-icon" class="w-6 h-6 text-white transition-transform duration-300"></i>
         </button>
 
