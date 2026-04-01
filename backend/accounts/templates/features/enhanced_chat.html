@@ -293,7 +293,8 @@
                 <a href="{% url 'main_home' %}" class="flex items-center space-x-2 hover:scale-105 transition-transform duration-300 group">
                     <!-- Logo Image -->
                     <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-500 flex items-center justify-center shadow-lg group-hover:shadow-cyan-500/50 transition-shadow">
-                        <i data-lucide="rocket" class="w-6 h-6 text-white"></i>
+                        <img src="/static/images/unisinq-logo.png" alt="UniSinq" class="w-6 h-6 object-cover" onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-icon').style.display='flex';">
+                        <i data-lucide="rocket" class="w-6 h-6 text-white fallback-icon" style="display:none;"></i>
                     </div>
                     <!-- Brand Text -->
                     <div class="flex flex-col leading-tight">
