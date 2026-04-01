@@ -180,7 +180,7 @@
             const timestampText = document.createElement('p');
             timestampText.className = 'text-xs opacity-70 mt-1';
             const date = new Date(timestamp);
-            timestampText.textContent = date.toLocaleDateString() + ', ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            timestampText.textContent = date.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
 
             messageBubble.appendChild(messageText);
             messageBubble.appendChild(timestampText);
@@ -505,7 +505,7 @@ function handleFileSelect(event) {
                             </div>
                             {% endif %}
                             <div class="flex items-center justify-between mt-1">
-                                <p class="text-xs opacity-70">{{ message.created_at|date:"M d, H:i" }}</p>
+                                <p class="text-xs opacity-70">{{ message.created_at|localtime|date:"M d, h:i A" }}</p>
                                 {% if message.sender == user and message.is_read %}
                                 <span class="text-xs opacity-70" title="Read">✓✓</span>
                                 {% elif message.sender == user %}
