@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="UniSinq - Collaborate. Connect. Create. Professional team chat and collaboration platform.">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>{{ chat_room.display_name }} - UniSinq Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -1098,8 +1099,47 @@
             alert('Member actions menu coming soon! 👤');
         }
 
-        function inviteMember() {
-            alert('Invite member functionality coming soon! ➕');
+        function getCSRFToken() {
+            const metaToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (metaToken) return metaToken;
+            const cookieMatch = document.cookie.match(/(^|;)\s*csrftoken=([^;]+)/);
+            return cookieMatch ? cookieMatch.pop() : '';
+        }
+
+        async function inviteMember() {
+            const memberId = prompt('Enter the user ID of the member to invite:');
+            if (!memberId) {
+                if (window.showNotification) {
+                    window.showNotification('Invitation canceled', { body: 'No member ID entered.' });
+                }
+                return;
+            }
+
+            const url = `/chat-rooms/${currentRoomId}/members/`;
+            const csrfToken = getCSRFToken();
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ user_id: memberId })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Could not add member');
+                }
+
+                showSuccessNotification(`Member added successfully: ${memberId}`);
+                setTimeout(() => window.location.reload(), 800);
+            } catch (error) {
+                showErrorNotification(`Failed to add member: ${error.message}`);
+                console.error('Invite member error:', error);
+            }
         }
 
         // Enhanced message input functionality

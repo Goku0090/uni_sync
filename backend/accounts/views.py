@@ -1167,8 +1167,8 @@ def enhanced_messages_view(request):
             'other_user': other_user,
         })
 
-    # Sort by most recent message
-    conversations.sort(key=lambda x: x['last_message'].created_at if x['last_message'] else room.created_at, reverse=True)
+    # Sort by most recent message or room creation if no messages yet
+    conversations.sort(key=lambda x: x['last_message'].created_at if x['last_message'] else x['room'].created_at, reverse=True)
 
     return render(request, 'features/enhanced_messages.html', {
         'conversations': conversations
@@ -1303,8 +1303,8 @@ def create_group_chat(request):
             messages.error(request, 'Group name is required.')
             return redirect('enhanced_messages')
 
-        if len(member_ids) < 2:
-            messages.error(request, 'Group chat must have at least 2 members.')
+        if len(member_ids) < 1:
+            messages.error(request, 'Group chat must have at least 1 member.')
             return redirect('enhanced_messages')
 
         # Create chat room

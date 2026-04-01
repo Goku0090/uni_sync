@@ -75,6 +75,8 @@ urlpatterns = [
     # Enhanced Messaging
     path('enhanced-messages/', views.enhanced_messages_view, name='enhanced_messages'),
     path('enhanced-chat/<int:room_id>/', views.enhanced_chat_view, name='enhanced_chat'),
+    path('api/enhanced-messages/', views.enhanced_messages_view, name='api_enhanced_messages'),
+    path('api/enhanced-chat/<int:room_id>/', views.enhanced_chat_view, name='api_enhanced_chat'),
     path('create-group-chat/', views.create_group_chat, name='create_group_chat'),
     path('add-reaction/<int:message_id>/', views.add_reaction, name='add_reaction'),
 
