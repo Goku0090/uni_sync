@@ -37,6 +37,11 @@ def add_comment(request, project_id):
                 content = None
 
         if not content:
+            content = request.POST.get('content', '').strip()
+
+        if not content:
+            return JsonResponse({'error': 'Comment cannot be empty'}, status=400)
+
         comment = Comment.objects.create(
             user=request.user,
             project=project,
