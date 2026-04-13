@@ -35,15 +35,8 @@ def add_comment(request, project_id):
                 content = data.get('content', '').strip()
             except Exception:
                 content = None
-            content = request.POST.get('content', '').strip()
-        
+
         if not content:
-            return JsonResponse({'error': 'Comment cannot be empty'}, status=400)
-        
-        if len(content) > 1000:
-            return JsonResponse({'error': 'Comment too long (max 1000 characters)'}, status=400)
-        
-        # Create comment
         comment = Comment.objects.create(
             user=request.user,
             project=project,
