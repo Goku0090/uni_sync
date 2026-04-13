@@ -112,7 +112,7 @@ def comment_posted(sender, instance, created, **kwargs):
                 'type': 'project.comment_posted',
                 'comment_id': instance.id,
                 'author': instance.user.username,
-                'text': instance.text[:100],  # First 100 chars
+                'text': instance.content[:100],  # First 100 chars
                 'timestamp': timezone.now().isoformat(),
             }
         )
