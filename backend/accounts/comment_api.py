@@ -28,15 +28,13 @@ def add_comment(request, project_id):
         
         # Get comment content from JSON or POST data
         content = None
-        if request.content_type == 'application/json':
+        if request.content_type and request.content_type.startswith('application/json'):
             import json
             try:
                 data = json.loads(request.body)
                 content = data.get('content', '').strip()
-            except:
-                pass
-        
-        if not content:
+            except Exception:
+                content = None
             content = request.POST.get('content', '').strip()
         
         if not content:
