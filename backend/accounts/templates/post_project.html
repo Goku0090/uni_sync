@@ -517,7 +517,7 @@
         </a>
       </div>
       <!-- Center Status -->
-      <div style="position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; justify-content: center;">
+      <div style="position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; justify-content: center; text-align: center;">
         <div style="font-size: 13px; color: rgba(255,255,255,0.6); padding: 8px 14px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
           📝 Create a project & find collaborators
         </div>
@@ -668,7 +668,7 @@
             <div class="mt-6 space-y-4">
               <div>
                 <label class="text-sm font-semibold">Detailed Description</label>
-                <textarea id="projectDescription" name="description" class="form-textarea" placeholder="Explain: the problem, solution, how it works, and who benefits"></textarea>
+                <textarea id="projectDescription" name="description" class="form-textarea" required aria-required="true" placeholder="Explain: the problem, solution, how it works, and who benefits"></textarea>
               </div>
 
               <div>
@@ -1234,7 +1234,18 @@
   // On submit: validate, confetti, show success notification
   document.getElementById('projectForm').addEventListener('submit', function(e){
     // Basic final validation
-    if(!document.getElementById('projectTitle').value.trim()){ showNotification('Title is required','error'); document.getElementById('projectTitle').focus(); return; }
+    if(!document.getElementById('projectTitle').value.trim()){
+      e.preventDefault();
+      showNotification('Title is required','error');
+      document.getElementById('projectTitle').focus();
+      return;
+    }
+    if(!document.getElementById('projectDescription').value.trim()){
+      e.preventDefault();
+      showNotification('Detailed description is required','error');
+      document.getElementById('projectDescription').focus();
+      return;
+    }
 
     // Show a quick publishing notification; allow the server to save the project via standard POST
     showNotification('Publishing project...','info',2000);

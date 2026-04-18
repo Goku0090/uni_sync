@@ -466,6 +466,8 @@
                                             <option value="IIT Madras">
                                             <option value="IIT Kanpur">
                                             <option value="IIT Kharagpur">
+                                            <option value="Bapuji Institute of Engineering and Technology">
+                                            <option value="Jain Institute of Technology">
                                             <option value="NIT Trichy">
                                             <option value="NIT Warangal">
                                             <option value="BITS Pilani">
@@ -482,6 +484,9 @@
                                             <option value="University of Michigan">
                                             <option value="University of Texas at Austin">
                                             <option value="Other">
+                                            <option value="Others">
+                                            <option value="Other College">
+                                            <option value="Other University">
                                         </datalist>
                                         <p id="college-help" class="text-xs text-gray-400 mt-1">Select from suggestions or type a different university name if your institution is not listed.</p>
                                     </div>
@@ -937,7 +942,9 @@
             const topDefaults = [
                 'Harvard University', 'Massachusetts Institute of Technology', 'Stanford University',
                 'California Institute of Technology', 'IIT Bombay', 'IIT Delhi', 'IIT Madras', 'IIT Kanpur',
-                'IIT Kharagpur', 'NIT Trichy', 'NIT Warangal', 'BITS Pilani', 'Delhi University', 'JNU'
+                'IIT Kharagpur', 'Bapuji Institute of Engineering and Technology', 'Jain Institute of Technology', 'NIT Trichy', 'NIT Warangal', 'BITS Pilani', 'Delhi University', 'JNU',
+                'GM Institute of Technology', 'GM University',
+                'Other', 'Others', 'Other College', 'Other University'
             ];
 
             const values = Array.from(new Set([...topDefaults, ...suggestions])).slice(0, 30);
