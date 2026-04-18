@@ -254,6 +254,46 @@ UniSinq Team 🚀
         logger.error(f"Failed to send newsletter confirmation to {email}: {str(e)}")
 
 
+def send_notification_email(user, title, message):
+    """Send an email for important notification events."""
+    if not user or not user.email:
+        return
+
+    subject = f"UniSinq Alert: {title}"
+    from_email = settings.DEFAULT_FROM_EMAIL
+    to = [user.email]
+
+    text_message = f"{title}\n\n{message}\n\nOpen UniSinq to view more details."
+    html_message = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {{ font-family: Arial, sans-serif; background: #f7f8fb; padding: 20px; }}
+    .container {{ max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 18px rgba(0,0,0,0.08); }}
+    .title {{ color: #2b2b2b; }}
+    .message {{ color: #4a4a4a; line-height: 1.6; }}
+    .footer {{ margin-top: 24px; color: #8a8a8a; font-size: 13px; }}
+</style>
+</head>
+<body>
+<div class="container">
+    <h2 class="title">{title}</h2>
+    <p class="message">{message}</p>
+    <p class="footer">Visit UniSinq to view the full update and respond.</p>
+</div>
+</body>
+</html>
+"""
+    try:
+        msg = EmailMultiAlternatives(subject, text_message, from_email, to)
+        msg.attach_alternative(html_message, "text/html")
+        msg.send(fail_silently=True)
+        logger.info(f"Notification email sent to {user.email} for {title}")
+    except Exception as e:
+        logger.error(f"Failed to send notification email to {user.email}: {str(e)}")
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def newsletter_subscribe(request):
@@ -1009,6 +1049,12 @@ def create_notification(user, notification_type, title, message, from_user=None,
     except (ImportError, RuntimeError, AttributeError):
         # Channels not configured or not available - notification still saved to database
         pass
+
+    if notification_type in ['message', 'project_comment', 'project_like']:
+        try:
+            send_notification_email(user, title, message)
+        except Exception as e:
+            logger.warning(f'Failed to send notification email for {notification_type}: {e}')
 
     return notification
 
@@ -1771,6 +1817,18 @@ def like_project(request, project_id):
                 project=project
             )
 
+            if project.user != request.user:
+                try:
+                    create_notification(
+                        user=project.user,
+                        notification_type='project_like',
+                        title=f'{request.user.username} liked your project',
+                        message=f'"{project.title}" was liked by {request.user.username}.',
+                        from_user=request.user
+                    )
+                except Exception as e:
+                    logger.warning(f"Failed to create like notification: {e}")
+
         return JsonResponse({
             'success': True, 
             'liked': liked, 
@@ -1848,6 +1906,13 @@ def post_project(request):
 
             messages.success(request, 'Project posted successfully!')
             return redirect('post_project')
+        else:
+            if not description:
+                messages.error(request, 'Detailed description is required to post a project.')
+            elif not title:
+                messages.error(request, 'Project title is required.')
+            else:
+                messages.error(request, 'Please complete all required fields before posting your project.')
     
     projects = Project.objects.filter(user=request.user).order_by('-created_at')
     
