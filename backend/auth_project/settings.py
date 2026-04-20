@@ -67,6 +67,9 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = "None"
 CSRF_COOKIE_SAMESITE = "None"
 
+# If behind a reverse proxy or load balancer, preserve HTTPS scheme
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # --- Installed Applications ---
 INSTALLED_APPS = [
     # Django Core Apps
@@ -154,12 +157,26 @@ CHANNEL_LAYERS = {
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 if DATABASE_URL:
-    # Parse DATABASE_URL for Render deployment
     import dj_database_url
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    }
-    print("[SUCCESS] DATABASE: Using Render PostgreSQL via DATABASE_URL")
+    try:
+        # dj_database_url handles parsing full DB URL and can enforce SSL for Render
+        DATABASES = {
+            'default': dj_database_url.parse(
+                DATABASE_URL,
+                conn_max_age=600,
+                ssl_require=True
+            )
+        }
+        print("[SUCCESS] DATABASE: Using Render/Postgres via DATABASE_URL with ssl_require=True")
+    except Exception as db_err:
+        print(f"[ERROR] DATABASE_URL parse failed: {db_err}")
+        print("[WARNING] Falling back to local SQLite to keep app running")
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 else:
     # Fallback configuration for local development
     DATABASES = {
@@ -171,7 +188,7 @@ else:
             'HOST': os.getenv('DB_HOST', 'localhost'),
             'PORT': os.getenv('DB_PORT', '5432'),
             'OPTIONS': {
-                'sslmode': os.getenv('DB_SSLMODE', 'prefer'),
+                'sslmode': os.getenv('DB_SSLMODE', 'require'),
             },
         }
     }
@@ -261,7 +278,9 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 ACCOUNT_LOGIN_METHODS = {'username'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 3
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_LOGOUT_REDIRECT_URL = '/login/'
 ACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_QUERY_EMAIL = True
