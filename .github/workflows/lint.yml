@@ -1,0 +1,65 @@
+name: Code Quality Checks
+
+on:
+  push:
+    branches: [ main, fresh-main, develop ]
+  pull_request:
+    branches: [ main, fresh-main, develop ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort pylint ruff bandit
+
+    - name: Run ruff (fast Python linter)
+      run: |
+        cd backend
+        ruff check . --output-format=github
+
+    - name: Run flake8
+      run: |
+        cd backend
+        # Stop the build if there are Python syntax errors
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Check black formatting
+      run: |
+        cd backend
+        black --check . --line-length=100
+
+    - name: Check import sorting
+      run: isort --check-only --profile black .
+
+    - name: Run pylint on critical files
+      run: |
+        cd backend
+        pylint accounts/models.py accounts/views.py auth_project/settings.py --disable=all --enable=E,F,C,R --exit-zero
+      continue-on-error: true
+
+    - name: Check for security issues
+      run: |
+        cd backend
+        bandit -r . -f json -o bandit-report.json || true
+      continue-on-error: true
